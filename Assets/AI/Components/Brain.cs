@@ -19,22 +19,28 @@ public class Brain : MonoBehaviour
     }
   }
   
+  Decision _decision;
   [SerializeField] Decision[] _decisions;
   float _evaluationDeltaTime;
   [SerializeField, Tooltip("Per second.")] float _evaluationRate;
   
-  void Act(Decision decision) => decision.Action.Act();
-  
-  Decision Evaluate()
+  void Evaluate()
   {
-    Decision chsn = null;
+    var chsn = default(Decision);
     for (int i = 0; i < _decisions.Length; i++)
     {
       var dec = _decisions[i];
       dec.Evaluate();
+      
       if (dec.Score > chsn.Score) chsn = dec;
     }
-    return chsn;
+    
+    _decision = chsn;
+  }
+  
+  void OnEnable()
+  {
+    _evaluationDeltaTime = _evaluationRate / 1000f;
   }
   
   void Update()
@@ -43,8 +49,10 @@ public class Brain : MonoBehaviour
     if (_evaluationDeltaTime >= _evaluationRate / 1000f)
     {
       _evaluationDeltaTime = 0f;
-      var dec = Evaluate();
-      Act(dec);
+      
+      Evaluate();
     }
+    
+      if (_decision.Score > 0) _decision.Update();
   }
 }
