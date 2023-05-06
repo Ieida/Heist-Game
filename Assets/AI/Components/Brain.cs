@@ -14,7 +14,7 @@ public class Brain : MonoBehaviour
       Score = 0;
       foreach (var con in Conditions)
       {
-        Score += con.Evaluate();
+        if (con.Evaluate()) Score += con.Points;
       }
     }
   }
